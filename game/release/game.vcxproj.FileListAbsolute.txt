@@ -1,1 +1,2 @@
 C:\Users\Sachin\Documents\Quake2Mod\game\release\gamex86.dll
+C:\Users\sachi\Documents\quake2-mod\game\release\gamex86.dll
