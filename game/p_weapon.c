@@ -781,9 +781,13 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 	fire_rocket (ent, start, forward, damage, 650, damage_radius, radius_damage);
-	start[0] *= right[0]*10;
+	start[0] += right[0] * 10;
+	start[1] += right[1] * 10;
+	start[2] += right[2] * 10;
 	fire_rocket (ent, start, forward, damage, 650, damage_radius, radius_damage);
-	start[0] *= right[0] * 10;
+	start[0] -= right[0] * 20;
+	start[1] -= right[1] * 20;
+	start[2] -= right[2] * 20;
 	fire_rocket(ent, start, forward, damage, 650, damage_radius, radius_damage);
 
 	// send muzzle flash
