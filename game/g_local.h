@@ -231,6 +231,12 @@ typedef struct
 #define WEAP_RAILGUN			10
 #define WEAP_BFG				11
 
+//Stamina Macros
+#define MAX_STAMINA     300
+#define STAMINA_DRAIN   2       // Lost per frame while running
+#define STAMINA_REGEN   1       // Gained per frame while walking
+#define RUN_THRESHOLD   250     // Move speed considered "running"
+
 typedef struct gitem_s
 {
 	char		*classname;	// spawning name
@@ -959,6 +965,8 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
+	int			stamina;
 };
 
 

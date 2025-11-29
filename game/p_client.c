@@ -1253,6 +1253,8 @@ void PutClientInServer (edict_t *ent)
 	// force the current weapon up
 	client->newweapon = client->pers.weapon;
 	ChangeWeapon (ent);
+	//initialize stamina
+	ent->client->stamina = MAX_STAMINA;
 }
 
 /*
@@ -1586,8 +1588,59 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			level.exitintermission = true;
 		return;
 	}
+	qboolean is_running = (abs(ucmd->forwardmove) > RUN_THRESHOLD || abs(ucmd->sidemove) > RUN_THRESHOLD);
+	if (is_running && ent->movetype != MOVETYPE_NOCLIP && ent->health > 0)
+	{
+		if (client->stamina > 0)
+		{
+			// Has stamina, let them run and drain it
+			client->stamina -= STAMINA_DRAIN;
+			gi.dprintf("Stamina: %d\n", client->stamina);
+		}
+		else
+		{
+			// Out of stamina, force walk speed
+			// Clamp forward move
+			if (ucmd->forwardmove > 200) ucmd->forwardmove = 200;
+			else if (ucmd->forwardmove < -200) ucmd->forwardmove = -200;
 
+			// Clamp side move
+			if (ucmd->sidemove > 200) ucmd->sidemove = 200;
+			else if (ucmd->sidemove < -200) ucmd->sidemove = -200;
+		}
+	}
 	pm_passent = ent;
+
+	if (ent->health > 0)
+	{
+		qboolean dashed = false;
+		vec3_t forward, right, up;
+		vec3_t dash_dir;
+
+		// Get the player's facing direction
+		AngleVectors(client->v_angle, forward, right, up);
+		VectorClear(dash_dir);
+
+		if (ucmd->buttons & BUTTON_DASH_LEFT)
+		{
+			// Invert Right vector to get Left
+			VectorInverse(right);
+			VectorScale(right, 400, dash_dir);
+			dashed = true;
+		}
+		else if (ucmd->buttons & BUTTON_DASH_RIGHT)
+		{
+			VectorScale(right, 400, dash_dir);
+			dashed = true;
+		}
+
+		if (dashed)
+		{
+			// Apply the dash velocity (Add to current velocity)
+			VectorAdd(ent->velocity, dash_dir, ent->velocity);
+		}
+	}
+
 
 	if (ent->client->chase_target) {
 

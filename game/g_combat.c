@@ -518,6 +518,9 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	{
 		if (!(targ->flags & FL_GODMODE) && (take))
 			targ->pain (targ, attacker, knockback, take);
+			SpawnItem(targ, FindItem("Health"));
+			//SpawnItem(client, FindItem("Health"));
+			//gi.dprintf("Health spawned for player\n");
 	}
 	else if (take)
 	{

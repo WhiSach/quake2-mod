@@ -503,6 +503,8 @@ typedef struct
 #define	BUTTON_ATTACK		1
 #define	BUTTON_USE			2
 #define	BUTTON_ANY			128			// any key whatsoever
+#define BUTTON_DASH_LEFT    4
+#define BUTTON_DASH_RIGHT   8
 
 
 // usercmd_t is sent to the server each client frame
@@ -1008,6 +1010,7 @@ typedef enum
 #define	STAT_FLASHES			15		// cleared each frame, 1 = health, 2 = armor
 #define STAT_CHASE				16
 #define STAT_SPECTATOR			17
+#define STAT_STAMINA			18
 
 #define	MAX_STATS				32
 
