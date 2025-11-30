@@ -1673,6 +1673,32 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	client->old_upmove = ucmd->upmove;
 
 
+	if ((ucmd->buttons & 16) &&
+		!(client->oldbuttons & 16) &&
+		ent->health > 0)
+	{
+		vec3_t forward;
+		AngleVectors(client->v_angle, forward, NULL, NULL);
+
+		VectorMA(ent->s.origin, 100, forward, ent->s.origin);
+
+		gi.unlinkentity(ent);
+		gi.linkentity(ent);
+
+
+		// 6. Spawn visual effects (Teleport sparkles)
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_TELEPORT_EFFECT);
+		gi.WritePosition(ent->s.origin);
+		gi.multicast(ent->s.origin, MULTICAST_PVS);
+
+		// 7. Halt momentum so you don't fly off ledges after teleporting
+		VectorClear(ent->velocity);
+
+		gi.cprintf(ent, PRINT_HIGH, "CHAOS CONTROL!\n");
+	}
+	
+	
 	if (ent->client->chase_target) {
 
 		client->resp.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
