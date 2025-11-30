@@ -967,6 +967,8 @@ struct gclient_s
 	qboolean	update_chase;		// need to update chase info?
 
 	int			stamina;
+	int			jump_count;
+	short		old_upmove;
 };
 
 

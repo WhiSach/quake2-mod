@@ -1255,6 +1255,10 @@ void PutClientInServer (edict_t *ent)
 	ChangeWeapon (ent);
 	//initialize stamina
 	ent->client->stamina = MAX_STAMINA;
+
+	ent->client->jump_count = 0;
+    ent->client->old_upmove = 0;
+
 }
 
 /*
@@ -1640,6 +1644,33 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			VectorAdd(ent->velocity, dash_dir, ent->velocity);
 		}
 	}
+
+	if (ent->groundentity)
+	{
+		client->jump_count = 0; // Reset jumps when landing
+	}
+	else
+	{
+		// Define jump thresholds
+		qboolean jump_pressed = (ucmd->upmove > 10);
+		qboolean jump_held = (client->old_upmove > 10);
+
+		// Check for fresh jump press in mid-air
+		// Allow 1 extra jump (jump_count < 1)
+		if (jump_pressed && !jump_held && client->jump_count < 1)
+		{
+			client->jump_count++;
+
+			// Apply upward velocity
+			ent->velocity[2] = 360;
+
+			// Play jump sound
+			gi.sound(ent, CHAN_VOICE, gi.soundindex("*jump1.wav"), 1, ATTN_NORM, 0);
+		}
+	}
+
+	// Save current upmove for the next frame
+	client->old_upmove = ucmd->upmove;
 
 
 	if (ent->client->chase_target) {
