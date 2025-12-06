@@ -1258,6 +1258,7 @@ void PutClientInServer (edict_t *ent)
 
 	ent->client->jump_count = 0;
     ent->client->old_upmove = 0;
+	ent->client->is_gp = false;
 
 }
 
@@ -1697,7 +1698,47 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 		gi.cprintf(ent, PRINT_HIGH, "CHAOS CONTROL!\n");
 	}
-	
+	// 1. Check for Impact (Did we land while pounding?)
+	if (client->is_gp && ent->groundentity)
+	{
+		// Reset state
+		client->is_gp = false;
+
+		// Create Shockwave Effect
+		// args: inflictor, attacker, damage, ignore, radius, mod
+		T_RadiusDamage(ent, ent, 150, ent, 250, MOD_CRUSH);
+
+		// Visuals & Sound
+		gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/rockhit.wav"), 1, ATTN_NORM, 0);
+
+		gi.cprintf(ent, PRINT_HIGH, "GROUND POUND!\n");
+	}
+
+	// 2. Check for Start Input (Airborne + Button Press)
+	// 32 is BUTTON_POUND
+	if ((ucmd->buttons & 32) &&
+		!client->is_gp &&
+		!ent->groundentity &&   // Must be in air
+		ent->waterlevel < 2)    // Can't pound while swimming
+	{
+		client->is_gp = true;
+
+		// Halt forward momentum completely for a straight drop
+		ent->velocity[0] = 0;
+		ent->velocity[1] = 0;
+
+		// Slam downwards
+		ent->velocity[2] = -1200;
+
+	}
+
+	// 3. Maintain Velocity (Don't let friction slow us down while falling)
+	if (client->is_gp)
+	{
+		// Force high downward velocity every frame until impact
+		if (ent->velocity[2] > -1200)
+			ent->velocity[2] = -1200;
+	}
 	
 	if (ent->client->chase_target) {
 

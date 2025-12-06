@@ -506,6 +506,7 @@ typedef struct
 #define BUTTON_DASH_LEFT    4
 #define BUTTON_DASH_RIGHT   8
 #define BUTTON_CHAOS        16
+#define BUTTON_GP			32
 
 
 // usercmd_t is sent to the server each client frame

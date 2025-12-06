@@ -969,6 +969,7 @@ struct gclient_s
 	int			stamina;
 	int			jump_count;
 	short		old_upmove;
+	qboolean	is_gp;
 };
 
 

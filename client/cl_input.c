@@ -62,6 +62,7 @@ kbutton_t	in_up, in_down;
 kbutton_t   in_dashleft;
 kbutton_t   in_dashright;
 kbutton_t   in_chaos;
+kbutton_t   in_pound;
 
 int			in_impulse;
 
@@ -185,6 +186,9 @@ void IN_DashRightUp(void) { KeyUp(&in_dashright); }
 
 void IN_ChaosDown(void) { KeyDown(&in_chaos); }
 void IN_ChaosUp(void) { KeyUp(&in_chaos); }
+
+void IN_PoundDown(void) { KeyDown(&in_pound); }
+void IN_PoundUp(void) { KeyUp(&in_pound); }
 
 /*
 ===============
@@ -369,6 +373,10 @@ void CL_FinishMove (usercmd_t *cmd)
 		cmd->buttons |= BUTTON_CHAOS;
 	in_chaos.state &= ~2;
 
+	if (in_pound.state & 3)
+		cmd->buttons |= BUTTON_GP;
+	in_pound.state &= ~2;
+
 	// send milliseconds of time to apply the move
 	ms = cls.frametime * 1000;
 	if (ms > 250)
@@ -470,6 +478,9 @@ void CL_InitInput (void)
 
 	Cmd_AddCommand("+chaos", IN_ChaosDown);
 	Cmd_AddCommand("-chaos", IN_ChaosUp);
+
+	Cmd_AddCommand("+pound", IN_PoundDown);
+	Cmd_AddCommand("-pound", IN_PoundUp);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
 }
