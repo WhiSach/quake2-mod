@@ -1687,13 +1687,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		gi.linkentity(ent);
 
 
-		// 6. Spawn visual effects (Teleport sparkles)
-		gi.WriteByte(svc_temp_entity);
-		gi.WriteByte(TE_TELEPORT_EFFECT);
-		gi.WritePosition(ent->s.origin);
-		gi.multicast(ent->s.origin, MULTICAST_PVS);
 
-		// 7. Halt momentum so you don't fly off ledges after teleporting
 		VectorClear(ent->velocity);
 
 		gi.cprintf(ent, PRINT_HIGH, "CHAOS CONTROL!\n");

@@ -83,7 +83,71 @@ qboolean CanDamage (edict_t *targ, edict_t *inflictor)
 	return false;
 }
 
+/*
+================
+make_touchable
+Allows the dropped item to be picked up after a short delay.
+================
+*/
+static void make_touchable(edict_t* ent)
+{
+	ent->touch = Touch_Item;
+	ent->think = G_FreeEdict;
+	ent->nextthink = level.time + 30; // Rings disappear after 30 seconds
+}
 
+/*
+================
+Toss_Health
+Spawns a single health pack and throws it from the player.
+================
+*/
+void Toss_Health(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float		spread = 300.0;
+
+	item = FindItem("Health");
+	if (!item) return;
+
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM; // Prevent respawning
+
+	// Use the "Medium Health" model (visuals only)
+	drop->s.modelindex = gi.modelindex("models/items/healing/medium/tris.md2");
+	drop->count = 10; // How much health this specific "ring" gives back
+
+	// Visual effects
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+
+	// Physics properties
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+
+	// Start position: Center of player, slightly raised
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+
+	drop->owner = self;
+
+	// Calculate random scatter velocity
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100); // Always pop upwards
+
+	// Delay pickup for 1 second (so you don't instantly grab them back)
+	drop->touch = NULL;
+	drop->think = make_touchable;
+	drop->nextthink = level.time + 1.0;
+
+	gi.linkentity(drop);
+}
 /*
 ============
 Killed
@@ -486,6 +550,19 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 // do the damage
 	if (take)
 	{
+		if (targ->client)
+		{
+			// Calculate drops: 1 ring per 10 damage
+			int num_drops = take;
+
+			if (num_drops > 15) num_drops = 15;
+
+			while (num_drops > 0)
+			{
+				Toss_Health(targ);
+				num_drops--;
+			}
+		}
 		if ((targ->svflags & SVF_MONSTER) || (client))
 			SpawnDamage (TE_BLOOD, point, normal, take);
 		else
