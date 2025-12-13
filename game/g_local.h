@@ -971,6 +971,9 @@ struct gclient_s
 	short		old_upmove;
 	qboolean	is_gp;
 	int			chaos;
+
+	qboolean    shield_bubble_active;   // One-hit shield flag
+	float       infinite_boost_framenum; // Timer for infinite boost
 };
 
 
