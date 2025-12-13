@@ -1601,6 +1601,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			// Has stamina, let them run and drain it
 			client->stamina -= STAMINA_DRAIN;
 			gi.dprintf("Stamina: %d\n", client->stamina);
+			T_RadiusDamage(ent, ent, 500, ent, 50, MOD_CRUSH);
 		}
 		else
 		{
