@@ -1255,7 +1255,7 @@ void PutClientInServer (edict_t *ent)
 	ChangeWeapon (ent);
 	//initialize stamina
 	ent->client->stamina = MAX_STAMINA;
-
+	ent->client->chaos = 5;
 	ent->client->jump_count = 0;
     ent->client->old_upmove = 0;
 	ent->client->is_gp = false;
@@ -1677,7 +1677,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 	if ((ucmd->buttons & 16) &&
 		!(client->oldbuttons & 16) &&
-		ent->health > 0)
+		(ent->health > 0) &&
+		(client->chaos > 0))
 	{
 		vec3_t forward;
 		AngleVectors(client->v_angle, forward, NULL, NULL);
@@ -1690,6 +1691,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 
 		VectorClear(ent->velocity);
+		client->chaos--;
 
 		gi.cprintf(ent, PRINT_HIGH, "CHAOS CONTROL!\n");
 	}

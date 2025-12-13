@@ -970,6 +970,7 @@ struct gclient_s
 	int			jump_count;
 	short		old_upmove;
 	qboolean	is_gp;
+	int			chaos;
 };
 
 
