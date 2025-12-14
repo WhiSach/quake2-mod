@@ -533,6 +533,16 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		take = 0;
 		save = damage;
 	}
+	if (targ->client && targ->client->shield_bubble_active)
+	{
+		// Ignore damage if it's environment damage (lava/slime/falling)?
+		// If you want it to block EVERYTHING, keep it as is.
+		if (damage > 0)
+		{
+			targ->client->shield_bubble_active = false; // Break the shield
+			gi.sound(targ, CHAN_ITEM, gi.soundindex("weapons/rocklx1a.wav"), 1, ATTN_NORM, 0); // Breaking 
+		}
+	}
 
 	psave = CheckPowerArmor (targ, point, normal, take, dflags);
 	take -= psave;

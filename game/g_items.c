@@ -1128,7 +1128,63 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 	if (ent->model)
 		gi.modelindex (ent->model);
 }
+#define MAX_CHAOS 100
+#define MAX_BOOST 100
 
+qboolean Pickup_ChaosShard(edict_t* ent, edict_t* other)
+{
+	if (other->client->chaos >= MAX_CHAOS)
+		return false;
+
+	other->client->chaos += ent->count;
+	if (other->client->chaos > MAX_CHAOS)
+		other->client->chaos = MAX_CHAOS;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
+		SetRespawn(ent, 30);
+
+	return true;
+}
+
+qboolean Pickup_BoostUp(edict_t* ent, edict_t* other)
+{
+	if (other->client->stamina >= MAX_BOOST)
+		return false;
+
+	other->client->stamina += ent->count;
+	if (other->client->stamina > MAX_BOOST)
+		other->client->stamina = MAX_BOOST;
+
+	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
+		SetRespawn(ent, 30);
+
+	return true;
+}
+
+qboolean Pickup_ShieldBubble(edict_t* ent, edict_t* other)
+{
+	other->client->shield_bubble_active = true;
+	gi.sound(other, CHAN_ITEM, gi.soundindex("items/protect.wav"), 1, ATTN_NORM, 0);
+
+	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
+		SetRespawn(ent, 60);
+
+	return true;
+}
+
+void Use_BoostPowerup(edict_t* ent, gitem_t* item)
+{
+	ent->client->pers.inventory[ITEM_INDEX(item)]--;
+	ValidateSelectedItem(ent);
+
+	// 30 seconds of infinite boost
+	if (ent->client->infinite_boost_framenum > level.framenum)
+		ent->client->infinite_boost_framenum += 300;
+	else
+		ent->client->infinite_boost_framenum = level.framenum + 300;
+
+	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
+}
 //======================================================================
 
 gitem_t	itemlist[] = 
@@ -2109,6 +2165,56 @@ tank commander's head
 		NULL,
 		0,
 /* precache */ "items/s_health.wav items/n_health.wav items/l_health.wav items/m_health.wav"
+	},
+	/*QUAKED item_chaos_shard (.3 .3 1) (-16 -16 -16) (16 16 16)
+	*/
+	{
+		"item_chaos_shard",
+		Pickup_ChaosShard,
+		NULL, NULL, NULL,
+		"misc/ar1_pkup.wav",
+		"models/items/keys/pyramid/tris.md2", EF_ROTATE, NULL,
+		"i_chaos", "Chaos Shard", 2,
+		10, // Adds 10 energy
+		NULL, 0, 0, NULL, 0, ""
+	},
+
+	/*QUAKED item_boost_up (.3 .3 1) (-16 -16 -16) (16 16 16)
+	*/
+	{
+		"item_boost_up",
+		Pickup_BoostUp,
+		NULL, NULL, NULL,
+		"misc/ar1_pkup.wav",
+		"models/items/keys/target/tris.md2", EF_ROTATE, NULL,
+		"i_boost", "Boost Up", 2,
+		25, // Adds 25 boost
+		NULL, 0, 0, NULL, 0, ""
+	},
+
+	/*QUAKED item_shield_bubble (.3 .3 1) (-16 -16 -16) (16 16 16)
+	*/
+	{
+		"item_shield_bubble",
+		Pickup_ShieldBubble,
+		NULL, NULL, NULL,
+		"items/pkup.wav",
+		"models/items/armor/shield/tris.md2", EF_ROTATE, NULL,
+		"i_bubble", "Shield Bubble", 2,
+		0, NULL, 0, 0, NULL, 0, ""
+	},
+
+	/*QUAKED item_boost_powerup (.3 .3 1) (-16 -16 -16) (16 16 16)
+	*/
+	{
+		"item_boost_powerup",
+		Pickup_Powerup,
+		Use_BoostPowerup,
+		Drop_General, NULL,
+		"items/pkup.wav",
+		"models/items/quaddama/tris.md2", EF_ROTATE, NULL,
+		"p_infboost", "Infinite Boost", 2,
+		60, NULL, IT_POWERUP, 0, NULL, 0, ""
 	},
 
 	// end of list marker
