@@ -628,6 +628,12 @@ gitem_t	*GetItemByIndex (int index);
 qboolean Add_Ammo (edict_t *ent, gitem_t *item, int count);
 void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
 
+void Toss_BoostUp(edict_t* self);
+void Toss_ChaosShard(edict_t* self);
+void Toss_BoostPowerup(edict_t* self);
+void Toss_ShieldBubble(edict_t* self);
+
+
 //
 // g_utils.c
 //

@@ -295,6 +295,77 @@ void Cmd_Give_f (edict_t *ent)
 	}
 }
 
+/*
+=================
+Cmd_SpawnItem_f
+Spawns an item in front of the player
+=================
+*/
+void Cmd_SpawnItem_f(edict_t* ent)
+{
+	gitem_t* it;
+	char* name;
+
+	// Ensure cheats are enabled
+	if (deathmatch->value && !sv_cheats->value)
+	{
+		gi.cprintf(ent, PRINT_HIGH, "You must run the server with '+set cheats 1' to enable this command.\n");
+		return;
+	}
+
+	name = gi.args();
+
+	// 1. Check for "Chaos Shard"
+	if (Q_stricmp(name, "Chaos Shard") == 0 || Q_stricmp(name, "item_chaos_shard") == 0)
+	{
+		Toss_ChaosShard(ent);
+		gi.cprintf(ent, PRINT_HIGH, "Spawned Chaos Shard\n");
+		return;
+	}
+
+	// 2. Check for "Boost Up"
+	if (Q_stricmp(name, "Boost Up") == 0 || Q_stricmp(name, "item_boost_up") == 0)
+	{
+		Toss_BoostUp(ent);
+		gi.cprintf(ent, PRINT_HIGH, "Spawned Boost Up\n");
+		return;
+	}
+
+	// 3. Check for "Shield Bubble"
+	if (Q_stricmp(name, "Shield Bubble") == 0 || Q_stricmp(name, "item_shield_bubble") == 0)
+	{
+		Toss_ShieldBubble(ent);
+		gi.cprintf(ent, PRINT_HIGH, "Spawned Shield Bubble\n");
+		return;
+	}
+
+	// 4. Check for "Infinite Boost" (Powerup)
+	if (Q_stricmp(name, "Infinite Boost") == 0 || Q_stricmp(name, "item_boost_powerup") == 0)
+	{
+		Toss_BoostPowerup(ent);
+		gi.cprintf(ent, PRINT_HIGH, "Spawned Infinite Boost\n");
+		return;
+	}
+
+	// ---------------------------------------------------------
+	// Fallback: Standard logic for all other items
+	// ---------------------------------------------------------
+
+	it = FindItem(name);
+
+	// Optional: Support finding by classname if FindItem fails
+	// if (!it) it = FindItemByClassname(name); 
+
+	if (!it)
+	{
+		gi.cprintf(ent, PRINT_HIGH, "unknown item: %s\n", name);
+		return;
+	}
+
+	// Use the generic Toss function for everything else
+	//Toss_Item(ent, it);
+	gi.cprintf(ent, PRINT_HIGH, "Spawned %s\n", it->pickup_name);
+}
 
 /*
 ==================
@@ -897,69 +968,6 @@ void Cmd_PlayerList_f(edict_t *ent)
 		strcat(text, st);
 	}
 	gi.cprintf(ent, PRINT_HIGH, "%s", text);
-}
-/*
-=================
-Cmd_SpawnItem_f
-Spawns an item in front of the player
-=================
-*/
-void Cmd_SpawnItem_f(edict_t* ent)
-{
-	gitem_t* it;
-	char* name;
-	edict_t* spawned;
-	vec3_t		forward;
-	vec3_t		spawn_origin;
-	trace_t		tr;
-
-	// Check for cheats
-	if (deathmatch->value && !sv_cheats->value)
-	{
-		gi.cprintf(ent, PRINT_HIGH, "You must run the server with '+set cheats 1' to enable this command.\n");
-		return;
-	}
-
-	name = gi.args();
-
-	// Try to find by friendly name (e.g., "Chaos Shard")
-	it = FindItem(name);
-	// If not found, try by classname (e.g., "item_chaos_shard")
-	if (!it)
-		it = FindItemByClassname(name);
-
-	if (!it)
-	{
-		gi.cprintf(ent, PRINT_HIGH, "unknown item: %s\n", name);
-		return;
-	}
-
-	spawned = G_Spawn();
-	spawned->classname = it->classname;
-
-	// Calculate a position 64 units in front of the player
-	AngleVectors(ent->client->v_angle, forward, NULL, NULL);
-
-	// Start at player's eye level
-	VectorCopy(ent->s.origin, spawn_origin);
-	spawn_origin[2] += ent->viewheight;
-
-	// Project forward
-	VectorMA(spawn_origin, 64, forward, spawn_origin);
-
-	// Trace to ensure we don't spawn inside a wall
-	tr = gi.trace(ent->s.origin, NULL, NULL, spawn_origin, ent, MASK_SOLID);
-	VectorCopy(tr.endpos, spawn_origin);
-
-	// Back off slightly (8 units) so it doesn't get stuck in the wall
-	VectorMA(spawn_origin, -8, forward, spawn_origin);
-
-	VectorCopy(spawn_origin, spawned->s.origin);
-
-	// Use standard spawn logic (sets model, physics, etc.)
-	SpawnItem(spawned, it);
-
-	gi.cprintf(ent, PRINT_HIGH, "Spawned %s\n", it->pickup_name);
 }
 
 /*

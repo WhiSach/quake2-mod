@@ -1128,18 +1128,11 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 	if (ent->model)
 		gi.modelindex (ent->model);
 }
-#define MAX_CHAOS 100
-#define MAX_BOOST 100
 
 qboolean Pickup_ChaosShard(edict_t* ent, edict_t* other)
 {
-	if (other->client->chaos >= MAX_CHAOS)
-		return false;
 
-	other->client->chaos += ent->count;
-	if (other->client->chaos > MAX_CHAOS)
-		other->client->chaos = MAX_CHAOS;
-
+	other->client->chaos += 1;
 	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
 		SetRespawn(ent, 30);
 
@@ -1148,12 +1141,7 @@ qboolean Pickup_ChaosShard(edict_t* ent, edict_t* other)
 
 qboolean Pickup_BoostUp(edict_t* ent, edict_t* other)
 {
-	if (other->client->stamina >= MAX_BOOST)
-		return false;
-
-	other->client->stamina += ent->count;
-	if (other->client->stamina > MAX_BOOST)
-		other->client->stamina = MAX_BOOST;
+	other->client->stamina += 1;
 
 	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
 		SetRespawn(ent, 30);
@@ -1184,6 +1172,174 @@ void Use_BoostPowerup(edict_t* ent, gitem_t* item)
 		ent->client->infinite_boost_framenum = level.framenum + 300;
 
 	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
+}
+
+void Toss_ChaosShard(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float spread = 300.0;
+
+	item = FindItem("Chaos Shard");
+	if (!item) return;
+
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM;
+
+	drop->s.modelindex = gi.modelindex("models/items/keys/pyramid/tris.md2");
+	drop->count = 10;
+
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+	drop->owner = self;
+
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100);
+
+	drop->touch = NULL;
+
+	// CHANGED: Use the correct function name
+	drop->think = drop_make_touchable;
+	drop->nextthink = level.time + 1.0;
+
+	gi.linkentity(drop);
+}
+
+void Toss_BoostUp(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float spread = 300.0;
+
+	item = FindItem("Boost Up");
+	if (!item) return;
+
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM;
+
+	drop->s.modelindex = gi.modelindex("models/items/keys/target/tris.md2");
+	drop->count = 25;
+
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+	drop->owner = self;
+
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100);
+
+	drop->touch = NULL;
+
+	// CHANGED: Use the correct function name
+	drop->think = drop_make_touchable;
+	drop->nextthink = level.time + 1.0;
+
+	gi.linkentity(drop);
+}
+
+void Toss_ShieldBubble(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float spread = 300.0;
+
+	item = FindItem("Shield Bubble");
+	if (!item) return;
+
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM;
+
+	drop->s.modelindex = gi.modelindex("models/items/armor/shield/tris.md2");
+	drop->count = 0;
+
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+	drop->owner = self;
+
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100);
+
+	drop->touch = NULL;
+
+	// CHANGED: Use the correct function name
+	drop->think = drop_make_touchable;
+	drop->nextthink = level.time + 1.0;
+
+	gi.linkentity(drop);
+}
+
+void Toss_BoostPowerup(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float spread = 300.0;
+
+	item = FindItem("Infinite Boost");
+	if (!item) return;
+
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM;
+
+	drop->s.modelindex = gi.modelindex("models/items/quaddama/tris.md2");
+	drop->count = 60;
+
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+	drop->owner = self;
+
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100);
+
+	drop->touch = NULL;
+
+	// CHANGED: Use the correct function name
+	drop->think = drop_make_touchable;
+	drop->nextthink = level.time + 1.0;
+
+	gi.linkentity(drop);
 }
 //======================================================================
 
