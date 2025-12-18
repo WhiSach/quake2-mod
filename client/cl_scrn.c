@@ -1228,14 +1228,45 @@ void SCR_ExecuteLayoutString (char *s)
 /*
 ================
 SCR_DrawStats
-
-The status bar is a small layout program that
-is based on the stats array
 ================
 */
-void SCR_DrawStats (void)
+void SCR_DrawStats(void)
 {
-	SCR_ExecuteLayoutString (cl.configstrings[CS_STATUSBAR]);
+	// 1. Draw the standard status bar (Ammo, Health, etc.)
+	SCR_ExecuteLayoutString(cl.configstrings[CS_STATUSBAR]);
+
+	// 2. Draw our custom Stamina/Chaos stats
+	// Only draw if the player is alive and the HUD is active
+	if (cl.frame.playerstate.stats[STAT_HEALTH] > 0 && !cl.frame.playerstate.stats[STAT_LAYOUTS])
+	{
+		int x, y;
+		int val_stamina = cl.frame.playerstate.stats[STAT_STAMINA];
+		int val_chaos = cl.frame.playerstate.stats[STAT_CHAOS];
+
+		// --- STAMINA ---
+		// Position: Bottom Right
+		x = viddef.width - 50;      // X start for the 3-digit number
+		y = viddef.height - 100;    // Y start
+
+		// Draw the Number (Width 3)
+		SCR_DrawField(x, y, 0, 3, val_stamina);
+
+		// Draw Label "Stamina" to the left
+		// Calculation: x - (Length of string * 8 pixels) - 8 pixels padding
+		// Text is 8px high, Numbers are 24px high. Add +8 to Y to center vertically.
+		DrawString(x - (7 * 8) - 8, y + 8, "Stamina");
+
+
+		// --- CHAOS ---
+		// Position: Stacked above Stamina
+		y = viddef.height - 130;
+
+		// Draw the Number
+		SCR_DrawField(x, y, 0, 3, val_chaos);
+
+		// Draw Label "Chaos" to the left
+		DrawString(x - (5 * 8) - 8, y + 8, "Chaos");
+	}
 }
 
 

@@ -1676,7 +1676,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 
 	if ((ucmd->buttons & 16) &&
-		!(client->oldbuttons & 16) &&
+		!(client->buttons & 16) &&
 		(ent->health > 0) &&
 		(client->chaos > 0))
 	{

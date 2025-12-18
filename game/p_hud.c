@@ -508,6 +508,9 @@ void G_SetStats (edict_t *ent)
 	//
 	ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.score;
 
+	ent->client->ps.stats[STAT_STAMINA] = ent->client->stamina;
+	ent->client->ps.stats[STAT_CHAOS] = ent->client->chaos;
+
 	//
 	// help icon / current weapon if not shown
 	//

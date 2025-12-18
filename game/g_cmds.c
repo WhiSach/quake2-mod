@@ -316,7 +316,7 @@ void Cmd_SpawnItem_f(edict_t* ent)
 	name = gi.args();
 
 	// 1. Check for "Chaos Shard"
-	if (Q_stricmp(name, "Chaos Shard") == 0 || Q_stricmp(name, "item_chaos_shard") == 0)
+	if (Q_stricmp(name, "Chaos_Shard") == 0 || Q_stricmp(name, "item_chaos_shard") == 0)
 	{
 		Toss_ChaosShard(ent);
 		gi.cprintf(ent, PRINT_HIGH, "Spawned Chaos Shard\n");
@@ -324,7 +324,7 @@ void Cmd_SpawnItem_f(edict_t* ent)
 	}
 
 	// 2. Check for "Boost Up"
-	if (Q_stricmp(name, "Boost Up") == 0 || Q_stricmp(name, "item_boost_up") == 0)
+	if (Q_stricmp(name, "Boost_Up") == 0 || Q_stricmp(name, "item_boost_up") == 0)
 	{
 		Toss_BoostUp(ent);
 		gi.cprintf(ent, PRINT_HIGH, "Spawned Boost Up\n");
@@ -332,7 +332,7 @@ void Cmd_SpawnItem_f(edict_t* ent)
 	}
 
 	// 3. Check for "Shield Bubble"
-	if (Q_stricmp(name, "Shield Bubble") == 0 || Q_stricmp(name, "item_shield_bubble") == 0)
+	if (Q_stricmp(name, "Shield_Bubble") == 0 || Q_stricmp(name, "item_shield_bubble") == 0)
 	{
 		Toss_ShieldBubble(ent);
 		gi.cprintf(ent, PRINT_HIGH, "Spawned Shield Bubble\n");
@@ -340,7 +340,7 @@ void Cmd_SpawnItem_f(edict_t* ent)
 	}
 
 	// 4. Check for "Infinite Boost" (Powerup)
-	if (Q_stricmp(name, "Infinite Boost") == 0 || Q_stricmp(name, "item_boost_powerup") == 0)
+	if (Q_stricmp(name, "Inf_Boost") == 0 || Q_stricmp(name, "item_boost_powerup") == 0)
 	{
 		Toss_BoostPowerup(ent);
 		gi.cprintf(ent, PRINT_HIGH, "Spawned Infinite Boost\n");
