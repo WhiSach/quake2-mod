@@ -347,6 +347,13 @@ void Cmd_SpawnItem_f(edict_t* ent)
 		return;
 	}
 
+	if(Q_stricmp(name, "warp_ring") == 0 || Q_stricmp(name, "item_warp_ring") == 0)
+	{
+		Toss_WarpRing(ent);
+		gi.cprintf(ent, PRINT_HIGH, "Spawn Warp Ring\n");
+		return;
+	}
+
 	// ---------------------------------------------------------
 	// Fallback: Standard logic for all other items
 	// ---------------------------------------------------------

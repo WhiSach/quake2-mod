@@ -632,7 +632,7 @@ void Toss_BoostUp(edict_t* self);
 void Toss_ChaosShard(edict_t* self);
 void Toss_BoostPowerup(edict_t* self);
 void Toss_ShieldBubble(edict_t* self);
-
+void Toss_WarpRing(edict_t* self);
 
 //
 // g_utils.c

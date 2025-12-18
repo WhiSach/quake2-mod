@@ -1177,6 +1177,48 @@ qboolean Pickup_BoostPowerup(edict_t* ent, edict_t* other)
 
 	return true;
 }
+
+qboolean Pickup_WarpRing(edict_t*end, edict_t* other)
+{
+	gi.AddCommandString("map base2\n");
+	if (!(end->spawnflags & DROPPED_ITEM) && (deathmatch->value))
+		SetRespawn(end, 60);
+	return true;
+}
+
+void Toss_WarpRing(edict_t* self)
+{
+	gitem_t* item;
+	edict_t* drop;
+	float spread = 300.0;
+	item = FindItem("Warp Ring");
+	if (!item) return;
+	drop = G_Spawn();
+	drop->classname = item->classname;
+	drop->item = item;
+	drop->spawnflags = DROPPED_ITEM;
+	drop->s.modelindex = gi.modelindex("models/objects/black/tris.md2");
+	drop->count = 0;
+	drop->s.effects = item->world_model_flags;
+	drop->s.renderfx = RF_GLOW;
+	VectorSet(drop->mins, -15, -15, -15);
+	VectorSet(drop->maxs, 15, 15, 15);
+	drop->solid = SOLID_TRIGGER;
+	drop->movetype = MOVETYPE_TOSS;
+	VectorCopy(self->s.origin, drop->s.origin);
+	drop->s.origin[2] += 16;
+	drop->owner = self;
+	drop->velocity[0] = crandom() * spread;
+	drop->velocity[1] = crandom() * spread;
+	drop->velocity[2] = 200 + (random() * 100);
+	drop->touch = NULL;
+	// CHANGED: Use the correct function name
+	drop->think = drop_make_touchable;
+	drop->nextthink = level.time + 1.0;
+	gi.linkentity(drop);
+}
+
+
 void Toss_ChaosShard(edict_t* self)
 {
 	gitem_t* item;
@@ -2377,6 +2419,21 @@ tank commander's head
 		0,                     // Quantity is irrelevant for instant items
 		NULL,
 		0,                     // <--- CHANGED: Removed IT_POWERUP (it's no longer an inventory item)
+		0, NULL, 0, ""
+	},
+
+	{
+		"item_warp_ring",
+		Pickup_WarpRing,   // <--- CHANGED: Use the new instant pickup function
+		NULL,                  // <--- CHANGED: No use function needed
+		NULL,                  // <--- CHANGED: Cannot be dropped
+		NULL,
+		"items/pkup.wav",
+		"models/items/black/tris.md2", EF_ROTATE, NULL,
+		"p_warp_ring", "Warp Ring", 2,
+		0,                     // Quantity is irrelevant for instant items
+		NULL,
+		0,                     
 		0, NULL, 0, ""
 	},
 
