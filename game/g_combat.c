@@ -117,8 +117,8 @@ void Toss_Health(edict_t* self)
 	drop->spawnflags = DROPPED_ITEM; // Prevent respawning
 
 	// Use the "Medium Health" model (visuals only)
-	drop->s.modelindex = gi.modelindex("models/items/healing/medium/tris.md2");
-	drop->count = 10; // How much health this specific "ring" gives back
+	drop->s.modelindex = gi.modelindex("models/items/adrenal/tris.md2");
+	drop->count = 1; // How much health this specific "ring" gives back
 
 	// Visual effects
 	drop->s.effects = item->world_model_flags;
@@ -539,7 +539,9 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		if (damage > 0)
 		{
 			targ->client->shield_bubble_active = false; // Break the shield
+			targ->client->invincible_framenum = level.framenum + 2;
 			take = 0;
+			save = damage;
 			gi.sound(targ, CHAN_ITEM, gi.soundindex("weapons/rocklx1a.wav"), 1, ATTN_NORM, 0); // Breaking 
 		}
 	}
