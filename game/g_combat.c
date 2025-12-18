@@ -535,8 +535,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 	}
 	if (targ->client && targ->client->shield_bubble_active)
 	{
-		// Ignore damage if it's environment damage (lava/slime/falling)?
-		// If you want it to block EVERYTHING, keep it as is.
+
 		if (damage > 0)
 		{
 			targ->client->shield_bubble_active = false; // Break the shield
@@ -570,7 +569,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 
 			while (num_drops > 0)
 			{
-				//Toss_Health(targ);
+				Toss_Health(targ);
 				num_drops--;
 			}
 		}
