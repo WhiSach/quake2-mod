@@ -1596,16 +1596,27 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	qboolean is_running = (abs(ucmd->forwardmove) > RUN_THRESHOLD || abs(ucmd->sidemove) > RUN_THRESHOLD);
 	if (is_running && ent->movetype != MOVETYPE_NOCLIP && ent->health > 0)
 	{
-		if (client->stamina > 0)
+		// Check if Infinite Boost is active
+		qboolean infinite_boost = (client->infinite_boost_framenum > level.framenum);
+
+		// Allow running if we have stamina OR if infinite boost is on
+		if (client->stamina > 0 || infinite_boost)
 		{
-			// Has stamina, let them run and drain it
-			client->stamina -= STAMINA_DRAIN;
+			// Only drain stamina if we DON'T have the powerup
+			if (!infinite_boost)
+			{
+				client->stamina -= STAMINA_DRAIN;
+			}
+
 			gi.dprintf("Stamina: %d\n", client->stamina);
+
+			// NOTE: This line below hurts the player when running? 
+			// You might want to remove this if it's not intended!
 			T_RadiusDamage(ent, ent, 500, ent, 50, MOD_CRUSH);
 		}
 		else
 		{
-			// Out of stamina, force walk speed
+			// Out of stamina AND no powerup, force walk speed
 			// Clamp forward move
 			if (ucmd->forwardmove > 200) ucmd->forwardmove = 200;
 			else if (ucmd->forwardmove < -200) ucmd->forwardmove = -200;

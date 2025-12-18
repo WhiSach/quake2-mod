@@ -1160,20 +1160,23 @@ qboolean Pickup_ShieldBubble(edict_t* ent, edict_t* other)
 	return true;
 }
 
-void Use_BoostPowerup(edict_t* ent, gitem_t* item)
+qboolean Pickup_BoostPowerup(edict_t* ent, edict_t* other)
 {
-	ent->client->pers.inventory[ITEM_INDEX(item)]--;
-	ValidateSelectedItem(ent);
-
-	// 30 seconds of infinite boost
-	if (ent->client->infinite_boost_framenum > level.framenum)
-		ent->client->infinite_boost_framenum += 300;
+	// Apply the Infinite Boost effect immediately
+	if (other->client->infinite_boost_framenum > level.framenum)
+		other->client->infinite_boost_framenum += 100; // Add 30 seconds to existing time
 	else
-		ent->client->infinite_boost_framenum = level.framenum + 300;
+		other->client->infinite_boost_framenum = level.framenum + 100;
 
-	gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
+	// Play activation sound
+	gi.sound(other, CHAN_ITEM, gi.soundindex("items/damage.wav"), 1, ATTN_NORM, 0);
+
+	// Handle respawning (for Deathmatch)
+	if (!(ent->spawnflags & DROPPED_ITEM) && (deathmatch->value))
+		SetRespawn(ent, 60); // Respawn after 60 seconds
+
+	return true;
 }
-
 void Toss_ChaosShard(edict_t* self)
 {
 	gitem_t* item;
@@ -2361,16 +2364,20 @@ tank commander's head
 	},
 
 	/*QUAKED item_boost_powerup (.3 .3 1) (-16 -16 -16) (16 16 16)
-	*/
+		*/
 	{
 		"item_boost_powerup",
-		Pickup_Powerup,
-		Use_BoostPowerup,
-		Drop_General, NULL,
+		Pickup_BoostPowerup,   // <--- CHANGED: Use the new instant pickup function
+		NULL,                  // <--- CHANGED: No use function needed
+		NULL,                  // <--- CHANGED: Cannot be dropped
+		NULL,
 		"items/pkup.wav",
 		"models/items/quaddama/tris.md2", EF_ROTATE, NULL,
 		"p_infboost", "Infinite Boost", 2,
-		60, NULL, IT_POWERUP, 0, NULL, 0, ""
+		0,                     // Quantity is irrelevant for instant items
+		NULL,
+		0,                     // <--- CHANGED: Removed IT_POWERUP (it's no longer an inventory item)
+		0, NULL, 0, ""
 	},
 
 	// end of list marker

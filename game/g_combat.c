@@ -540,6 +540,7 @@ void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir,
 		if (damage > 0)
 		{
 			targ->client->shield_bubble_active = false; // Break the shield
+			take = 0;
 			gi.sound(targ, CHAN_ITEM, gi.soundindex("weapons/rocklx1a.wav"), 1, ATTN_NORM, 0); // Breaking 
 		}
 	}
