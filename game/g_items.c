@@ -1197,7 +1197,7 @@ void Toss_WarpRing(edict_t* self)
 	drop->classname = item->classname;
 	drop->item = item;
 	drop->spawnflags = DROPPED_ITEM;
-	drop->s.modelindex = gi.modelindex("models/objects/black/tris.md2");
+	drop->s.modelindex = gi.modelindex("models/items/keys/red_key/tris.md2");
 	drop->count = 0;
 	drop->s.effects = item->world_model_flags;
 	drop->s.renderfx = RF_GLOW;
@@ -2429,7 +2429,7 @@ tank commander's head
 		NULL,                  // <--- CHANGED: Cannot be dropped
 		NULL,
 		"items/pkup.wav",
-		"models/items/black/tris.md2", EF_ROTATE, NULL,
+		"models/items/keys/red_key/tris.md2", EF_ROTATE, NULL,
 		"p_warp_ring", "Warp Ring", 2,
 		0,                     // Quantity is irrelevant for instant items
 		NULL,
