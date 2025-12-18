@@ -1870,7 +1870,59 @@ void M_Menu_Credits_f( void )
 	credits_start_time = cls.realtime;
 	M_PushMenu( M_Credits_MenuDraw, M_Credits_Key);
 }
+/*
+=============================================================================
+HOW TO PLAY MENU
+=============================================================================
+*/
 
+void M_HowToPlay_Draw(void)
+{
+	int x = 40;
+	int y = 40;
+
+	// Draw a background box
+	M_DrawTextBox(x - 8, y - 8, 32, 18);
+
+	// Header
+	M_Print(x + 40, y, "MOVEMENT MOD HELP");
+
+	y += 24;
+	M_Print(x, y, "Double Jump  : Jump twice in the air");
+	y += 10;
+	M_Print(x, y, "Dash         : q and e");
+	y += 10;
+	M_Print(x, y, "Ground Pound : ctrl in air");
+	y += 10;
+	M_Print(x, y, "Chaos Control: v");
+
+	y += 20;
+	M_Print(x, y, "Stats:");
+	y += 10;
+	M_Print(x + 10, y, "Stamina: Drains running");
+	y += 10;
+	M_Print(x + 10, y, "Chaos  : For abilities");
+
+	y += 20;
+	M_Print(x, y, "Items:");
+	y += 10;
+	M_Print(x + 10, y, "Chaos Shard, Boost Up,");
+	y += 10;
+	M_Print(x + 10, y, "Shield Bubble, Inf Boost");
+}
+
+const char* M_HowToPlay_Key(int key)
+{
+	// Press any key to go back
+	if (key == K_ESCAPE || key == K_ENTER || key == K_SPACE || key == K_BACKSPACE)
+		M_PopMenu();
+	return menu_out_sound;
+}
+
+void M_Menu_HowToPlay_f(void)
+{
+	M_PushMenu(M_HowToPlay_Draw, M_HowToPlay_Key);
+}
 /*
 =============================================================================
 
@@ -1888,6 +1940,7 @@ static menuaction_s		s_hard_game_action;
 static menuaction_s		s_load_game_action;
 static menuaction_s		s_save_game_action;
 static menuaction_s		s_credits_action;
+static menuaction_s     s_howtoplay_action;
 static menuseparator_s	s_blankline;
 
 static void StartGame( void )
@@ -1935,6 +1988,10 @@ static void SaveGameFunc( void *unused )
 static void CreditsFunc( void *unused )
 {
 	M_Menu_Credits_f();
+}
+static void HowToPlayFunc(void* unused)
+{
+	M_Menu_HowToPlay_f();
 }
 
 void Game_MenuInit( void )
@@ -1987,6 +2044,13 @@ void Game_MenuInit( void )
 	s_save_game_action.generic.name	= "save game";
 	s_save_game_action.generic.callback = SaveGameFunc;
 
+	s_howtoplay_action.generic.type = MTYPE_ACTION;
+	s_howtoplay_action.generic.flags = QMF_LEFT_JUSTIFY;
+	s_howtoplay_action.generic.x = 0;
+	s_howtoplay_action.generic.y = 60; // Position below Save Game
+	s_howtoplay_action.generic.name = "how to play";
+	s_howtoplay_action.generic.callback = HowToPlayFunc;
+
 	s_credits_action.generic.type	= MTYPE_ACTION;
 	s_credits_action.generic.flags  = QMF_LEFT_JUSTIFY;
 	s_credits_action.generic.x		= 0;
@@ -2002,6 +2066,8 @@ void Game_MenuInit( void )
 	Menu_AddItem( &s_game_menu, ( void * ) &s_save_game_action );
 	Menu_AddItem( &s_game_menu, ( void * ) &s_blankline );
 	Menu_AddItem( &s_game_menu, ( void * ) &s_credits_action );
+
+	Menu_AddItem(&s_game_menu, (void*)&s_howtoplay_action);
 
 	Menu_Center( &s_game_menu );
 }
