@@ -8,8 +8,12 @@ This is a custom Quake 2 modification inspired by *Sonic the Hedgehog*, bringing
 
 ## Installation Instructions
 
-TBC
----
+- Simply Drag the Mod folder into your Quake 2 folder
+
+- STEAM INSTALLATION:
+- The release folder in this repo should have a "Quake2.exe" file.
+- Replace the Quake2.exe file in your Steam install of Quake2 with this one and click the new Quake2.exe file to launch OG Quake 2
+- Either make a shortcut by adding "+set game Mod" to your target path or by typing it into your terminal 
 
 ## Features & How to Play
 
@@ -20,7 +24,8 @@ Your health is represented by Rings. When you take damage, you lose Rings.
 TO BE ADDED:
 - **Boost & Chaos Resources:**  
 Picking up items fills your Boost and Chaos Energy meters, which power your special abilities.
-
+- **Warp Ring**
+ Teleport to the new levels using the Warp Ring!
 ---
 
 ### Movement Abilities
@@ -50,6 +55,7 @@ Slam down from mid-air for a fast, powerful impact.
 - **Boost Up:** Adds to your Boost meter.  
 - **Shield Bubble:** Grants one-hit invulnerability. Breaks upon taking damage.  
 - **Boost Powerup:** Provides temporary infinite Boost for a limited duration.
+- **Warp Ring** to the new levels using the Warp Ring!
 
 
 
